@@ -13,12 +13,13 @@ if (Deno.args.length == 0) {
   }
   const fns = await dir2array("./");
   for (const fn of fns) {
-    if (!fn.endsWith(".js")) {
+    if (!fn.endsWith(".js") && !fn.endsWith(".ts") && !fn.endsWith(".mjs")) {
       continue;
     }
     try {
       await fix(fn);
     } catch (e) {
+      console.log(e);
       console.log("skip ", fn);
     }
   }
