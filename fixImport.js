@@ -8,14 +8,17 @@ export const fixImport = (src) => {
     if (st.type == "ImportDeclaration") {
       const name = st.source.value;
       if (!name.endsWith(".js")) {
-        st.source.value += ".js";
-        st.source.raw = `"${st.source.value}"`;
-      } else if (!name.endsWith(".ts")) {
-        st.source.value.replace(".ts", ".js");
+        if (name.endsWith(".ts")) {
+          st.source.value.replace(".ts", ".js");
+        } else {
+          st.source.value += ".js";
+        }
         st.source.raw = `"${st.source.value}"`;
       }
     }
   }
-  const res = escodegen.generate(ast);
+  // https://github.com/code4fukui/escodegen/blob/es/escodegen.js
+  const options = { format: { quotes: "double" } };
+  const res = escodegen.generate(ast, options);
   return res;
 };
