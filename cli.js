@@ -16,7 +16,11 @@ if (Deno.args.length == 0) {
     if (!fn.endsWith(".js")) {
       continue;
     }
-    await fix(fn);
+    try {
+      await fix(fn);
+    } catch (e) {
+      console.log("skip ", fn);
+    }
   }
 } else {
   await fix(Deno.args[0]);
