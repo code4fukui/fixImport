@@ -3,7 +3,7 @@
 fix import statements in JavaScript/TypeScript
 
 - "./some" → "./some.js"
-- "./some.ts" → "./some.ts"
+- "./some.ts" → "./some.js"
 
 ## usage
 
