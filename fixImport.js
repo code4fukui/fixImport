@@ -25,7 +25,14 @@ export const fixImportLine = (src) => {
     return src;
   }
   // https://github.com/code4fukui/escodegen/blob/es/escodegen.js
-  const options = { format: { quotes: doublequote ? "double" : "single" } };
+  const options = {
+    format: {
+      quotes: doublequote ? "double" : "single",
+      indent: {
+        style: "  ", // 2 spaces
+      },
+    }
+  };
   const res = escodegen.generate(ast, options);
   return res;
 };
@@ -36,12 +43,34 @@ export const fixImport = (src) => {
   for (let i = 0; i < ss.length; i++) {
     const s = ss[i];
     if (s.startsWith("import ")) {
-      const s2 = fixImportLine(s);
-      if (s != s2) {
-        flg = true;
-        ss[i] = s2;
+      if (s.indexOf("from") >= 0) {
+        const s2 = fixImportLine(s);
+        if (s != s2) {
+          flg = true;
+          ss[i] = s2;
+        }
+      } else { // multiline needs semicolon
+        const ss2 = [s];
+        for (let j = i + 1; j < ss.length; j++) {
+          const s2 = ss[j];
+          if (s2.indexOf(";") >= 0) {
+            ss2.push(s2);
+            const s3 = ss2.join("\n");
+            const s4 = fixImportLine(s3);
+            if (s3 != s4) {
+              flg = true;
+              ss[i] = s4;
+              for (let k = i + 1; k <= j; k++) {
+                ss[k] = null;
+              }
+            }
+            i = j;
+            break;
+          }
+          ss2.push(s2);
+        }
       }
     }
   }
-  return ss.join("\n");
+  return ss.filter(s => s !== null).join("\n");
 };
